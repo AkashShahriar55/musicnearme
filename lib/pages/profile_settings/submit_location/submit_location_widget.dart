@@ -50,20 +50,11 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
       );
 
       _model.locationDatajson = (_model.locationData?.jsonBody ?? '');
+      safeSetState(() {});
     });
 
-    _model.yourFullNameTextController1 ??= TextEditingController(
-        text: valueOrDefault<String>(
-      getJsonField(
-        _model.locationDatajson,
-        r'''$.features[:].properties.full_address''',
-      )?.toString().toString(),
-      'No address found!',
-    ));
-    _model.yourFullNameFocusNode1 ??= FocusNode();
-
-    _model.yourFullNameTextController2 ??= TextEditingController();
-    _model.yourFullNameFocusNode2 ??= FocusNode();
+    _model.yourFullNameTextController ??= TextEditingController();
+    _model.yourFullNameFocusNode ??= FocusNode();
 
     _model.emailAddressTextController ??= TextEditingController();
     _model.emailAddressFocusNode ??= FocusNode();
@@ -293,36 +284,27 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                         FlutterFlowTheme.of(context).alternate,
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      8.0, 0.0, 8.0, 0.0),
-                                  child: TextFormField(
-                                    controller:
-                                        _model.yourFullNameTextController1,
-                                    focusNode: _model.yourFullNameFocusNode1,
-                                    autofocus: true,
-                                    obscureText: false,
-                                    decoration: InputDecoration(
-                                      hintStyle: FlutterFlowTheme.of(context)
-                                          .labelMedium
+                                child: Align(
+                                  alignment: AlignmentDirectional(-1.0, 0.0),
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        8.0, 15.0, 8.0, 15.0),
+                                    child: Text(
+                                      valueOrDefault<String>(
+                                        getJsonField(
+                                          _model.locationDatajson,
+                                          r'''$.features[:].properties.full_address''',
+                                        )?.toString(),
+                                        'No address found!',
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
                                           .override(
                                             fontFamily: 'Readex Pro',
                                             letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      focusedErrorBorder: InputBorder.none,
                                     ),
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          letterSpacing: 0.0,
-                                        ),
-                                    validator: _model
-                                        .yourFullNameTextController1Validator
-                                        .asValidator(context),
                                   ),
                                 ),
                               ),
@@ -356,8 +338,8 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                       8.0, 0.0, 8.0, 0.0),
                                   child: TextFormField(
                                     controller:
-                                        _model.yourFullNameTextController2,
-                                    focusNode: _model.yourFullNameFocusNode2,
+                                        _model.yourFullNameTextController,
+                                    focusNode: _model.yourFullNameFocusNode,
                                     autofocus: true,
                                     obscureText: false,
                                     decoration: InputDecoration(
@@ -379,7 +361,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                           letterSpacing: 0.0,
                                         ),
                                     validator: _model
-                                        .yourFullNameTextController2Validator
+                                        .yourFullNameTextControllerValidator
                                         .asValidator(context),
                                   ),
                                 ),
@@ -845,7 +827,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                     websiteLink:
                                         _model.websiteLinkTextController.text,
                                     name:
-                                        _model.yourFullNameTextController2.text,
+                                        _model.yourFullNameTextController.text,
                                     location: getJsonField(
                                       _model.locationDatajson,
                                       r'''$.features[:].properties.full_address''',
@@ -881,7 +863,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                     websiteLink:
                                         _model.websiteLinkTextController.text,
                                     name:
-                                        _model.yourFullNameTextController2.text,
+                                        _model.yourFullNameTextController.text,
                                     location: getJsonField(
                                       _model.locationDatajson,
                                       r'''$.features[:].properties.full_address''',

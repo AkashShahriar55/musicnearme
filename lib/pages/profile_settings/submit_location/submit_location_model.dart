@@ -20,14 +20,10 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
       FFUploadedFile(bytes: Uint8List.fromList([]));
 
   // State field(s) for yourFullName widget.
-  FocusNode? yourFullNameFocusNode1;
-  TextEditingController? yourFullNameTextController1;
-  String? Function(BuildContext, String?)? yourFullNameTextController1Validator;
-  // State field(s) for yourFullName widget.
-  FocusNode? yourFullNameFocusNode2;
-  TextEditingController? yourFullNameTextController2;
-  String? Function(BuildContext, String?)? yourFullNameTextController2Validator;
-  String? _yourFullNameTextController2Validator(
+  FocusNode? yourFullNameFocusNode;
+  TextEditingController? yourFullNameTextController;
+  String? Function(BuildContext, String?)? yourFullNameTextControllerValidator;
+  String? _yourFullNameTextControllerValidator(
       BuildContext context, String? val) {
     if (val == null || val.isEmpty) {
       return 'Field is required';
@@ -111,8 +107,7 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
 
   @override
   void initState(BuildContext context) {
-    yourFullNameTextController2Validator =
-        _yourFullNameTextController2Validator;
+    yourFullNameTextControllerValidator = _yourFullNameTextControllerValidator;
     emailAddressTextControllerValidator = _emailAddressTextControllerValidator;
     businessNameTextControllerValidator = _businessNameTextControllerValidator;
     businessDescriptionTextControllerValidator =
@@ -122,11 +117,8 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
 
   @override
   void dispose() {
-    yourFullNameFocusNode1?.dispose();
-    yourFullNameTextController1?.dispose();
-
-    yourFullNameFocusNode2?.dispose();
-    yourFullNameTextController2?.dispose();
+    yourFullNameFocusNode?.dispose();
+    yourFullNameTextController?.dispose();
 
     emailAddressFocusNode?.dispose();
     emailAddressTextController?.dispose();
