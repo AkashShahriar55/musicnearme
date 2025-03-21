@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "311035935284",
+    "project_id": "musicnearme-akash-n3hrd5",
+    "storage_bucket": "musicnearme-akash-n3hrd5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311035935284:android:036f35517dacec28d3e861",
+        "android_client_info": {
+          "package_name": "com.atlasbaseengineering.musicnearme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311035935284-legd0dbvm2tsci953hqbm08g7b489vbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_QAU2YjTCg35fJxWu_a3rknU1auR201w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311035935284-legd0dbvm2tsci953hqbm08g7b489vbv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "311035935284-5cut3nc9nte36tksi78lu2kuvltji01m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.atlasbaseengineering.musicnearme"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
