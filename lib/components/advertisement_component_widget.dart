@@ -2,9 +2,13 @@ import '/backend/backend.dart';
 import '/components/blank3_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'advertisement_component_model.dart';
 export 'advertisement_component_model.dart';
 
@@ -49,7 +53,7 @@ class _AdvertisementComponentWidgetState
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: widget.allPlacesIndex == 0,
+      visible: widget!.allPlacesIndex == 0,
       child: FutureBuilder<List<AdvertisementsRecord>>(
         future: queryAdvertisementsRecordOnce(),
         builder: (context, snapshot) {

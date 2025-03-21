@@ -1,15 +1,21 @@
 import '';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/components/add_event_component_widget.dart';
 import '/components/events_component_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'events_model.dart';
 export 'events_model.dart';
@@ -110,7 +116,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                                 FocusManager.instance.primaryFocus?.unfocus();
                               },
                               child: AddEventComponentWidget(
-                                place: widget.placeRef!,
+                                place: widget!.placeRef!,
                               ),
                             ),
                           ),
@@ -128,7 +134,7 @@ class _EventsWidgetState extends State<EventsWidget> {
         body: SafeArea(
           top: true,
           child: StreamBuilder<PlacesRecord>(
-            stream: PlacesRecord.getDocument(widget.placeRef!),
+            stream: PlacesRecord.getDocument(widget!.placeRef!),
             builder: (context, snapshot) {
               // Customize what your widget looks like when it's loading.
               if (!snapshot.hasData) {
@@ -194,8 +200,8 @@ class _EventsWidgetState extends State<EventsWidget> {
                                   size: 24.0,
                                 ),
                               ),
-                              if ((currentUserDocument?.places.toList() ?? [])
-                                  .contains(widget.placeRef))
+                              if ((currentUserDocument?.places?.toList() ?? [])
+                                  .contains(widget!.placeRef))
                                 Align(
                                   alignment: AlignmentDirectional(1.0, 0.0),
                                   child: Builder(
@@ -234,7 +240,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                                                       child:
                                                           AddEventComponentWidget(
                                                         place:
-                                                            widget.placeRef!,
+                                                            widget!.placeRef!,
                                                       ),
                                                     ),
                                                   ),
@@ -338,7 +344,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                               location: containerPlacesRecord.location,
                               showViews: true,
                               initialPage: 0,
-                              placeRef: widget.placeRef,
+                              placeRef: widget!.placeRef,
                             ),
                           ),
                         ),

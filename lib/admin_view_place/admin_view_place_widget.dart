@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
@@ -8,10 +9,14 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'admin_view_place_model.dart';
 export 'admin_view_place_model.dart';
 
@@ -89,7 +94,7 @@ class _AdminViewPlaceWidgetState extends State<AdminViewPlaceWidget>
           ),
         ),
         body: StreamBuilder<PlacesRecord>(
-          stream: PlacesRecord.getDocument(widget.placeRef!),
+          stream: PlacesRecord.getDocument(widget!.placeRef!),
           builder: (context, snapshot) {
             // Customize what your widget looks like when it's loading.
             if (!snapshot.hasData) {
@@ -265,7 +270,9 @@ class _AdminViewPlaceWidgetState extends State<AdminViewPlaceWidget>
                                                   },
                                                   child: Stack(
                                                     children: [
-                                                      if ((_model
+                                                      if (_model.uploadedLocalFile1 ==
+                                                              null ||
+                                                          (_model
                                                                   .uploadedLocalFile1
                                                                   .bytes
                                                                   ?.isEmpty ??
@@ -322,6 +329,9 @@ class _AdminViewPlaceWidgetState extends State<AdminViewPlaceWidget>
                                                         ),
                                                       if (containerPlacesRecord
                                                                   .bannerImg !=
+                                                              null &&
+                                                          containerPlacesRecord
+                                                                  .bannerImg !=
                                                               '')
                                                         Container(
                                                           width:
@@ -344,7 +354,9 @@ class _AdminViewPlaceWidgetState extends State<AdminViewPlaceWidget>
                                                                         8.0),
                                                           ),
                                                         ),
-                                                      if ((_model
+                                                      if (_model.uploadedLocalFile1 !=
+                                                              null &&
+                                                          (_model
                                                                   .uploadedLocalFile1
                                                                   .bytes
                                                                   ?.isNotEmpty ??
@@ -1174,7 +1186,7 @@ class _AdminViewPlaceWidgetState extends State<AdminViewPlaceWidget>
                                       location: containerPlacesRecord.location,
                                       showViews: true,
                                       initialPage: 0,
-                                      placeRef: widget.placeRef,
+                                      placeRef: widget!.placeRef,
                                     ),
                                   ),
                                 ),

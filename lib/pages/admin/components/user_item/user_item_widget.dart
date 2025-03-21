@@ -1,7 +1,15 @@
 import '/backend/backend.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'user_item_model.dart';
 export 'user_item_model.dart';
 
@@ -69,7 +77,7 @@ class _UserItemWidgetState extends State<UserItemWidget>
               ClipRRect(
                 borderRadius: BorderRadius.circular(40.0),
                 child: Image.network(
-                  widget.userDoc!.photoUrl,
+                  widget!.userDoc!.photoUrl,
                   width: 60.0,
                   height: 60.0,
                   fit: BoxFit.cover,
@@ -92,7 +100,7 @@ class _UserItemWidgetState extends State<UserItemWidget>
                           EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
                       child: Text(
                         valueOrDefault<String>(
-                          widget.userDoc?.displayName,
+                          widget!.userDoc?.displayName,
                           'User',
                         ),
                         style: FlutterFlowTheme.of(context).bodyLarge.override(
@@ -107,13 +115,13 @@ class _UserItemWidgetState extends State<UserItemWidget>
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          if (widget.userDoc?.hasPhoneNumber() ?? true)
+                          if (widget!.userDoc?.hasPhoneNumber() ?? true)
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   12.0, 0.0, 0.0, 0.0),
                               child: Text(
                                 valueOrDefault<String>(
-                                  widget.userDoc?.phoneNumber,
+                                  widget!.userDoc?.phoneNumber,
                                   'Phone number',
                                 ),
                                 style: FlutterFlowTheme.of(context)
@@ -124,13 +132,13 @@ class _UserItemWidgetState extends State<UserItemWidget>
                                     ),
                               ),
                             ),
-                          if (widget.userDoc?.hasEmail() ?? true)
+                          if (widget!.userDoc?.hasEmail() ?? true)
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   4.0, 0.0, 0.0, 0.0),
                               child: Text(
                                 valueOrDefault<String>(
-                                  widget.userDoc?.email,
+                                  widget!.userDoc?.email,
                                   'test@gmail.com',
                                 ),
                                 style: FlutterFlowTheme.of(context)

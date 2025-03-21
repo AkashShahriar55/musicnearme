@@ -1,11 +1,16 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'event_list_item_model.dart';
 export 'event_list_item_model.dart';
 
@@ -87,12 +92,12 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
               ViewPlacePageWidget.routeName,
               queryParameters: {
                 'placeDoc': serializeParam(
-                  widget.placeDoc,
+                  widget!.placeDoc,
                   ParamType.Document,
                 ),
               }.withoutNulls,
               extra: <String, dynamic>{
-                'placeDoc': widget.placeDoc,
+                'placeDoc': widget!.placeDoc,
               },
             );
           },
@@ -103,7 +108,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                 children: [
                   Hero(
                     tag: valueOrDefault<String>(
-                      widget.placeDoc?.bannerImg,
+                      widget!.placeDoc?.bannerImg,
                       'https://picsum.photos/seed/809/600',
                     ),
                     transitionOnUserGestures: true,
@@ -111,7 +116,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                       borderRadius: BorderRadius.circular(10.0),
                       child: Image.network(
                         valueOrDefault<String>(
-                          widget.placeDoc?.bannerImg,
+                          widget!.placeDoc?.bannerImg,
                           'https://picsum.photos/seed/809/600',
                         ),
                         width: double.infinity,
@@ -155,10 +160,10 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            if ((currentUserDocument?.favorites.toList() ?? [])
+                            if ((currentUserDocument?.favorites?.toList() ?? [])
                                 .contains(FavoriteObjStruct(
-                              placeRef: widget.placeDoc?.reference,
-                              type: widget.placeDoc?.placeType,
+                              placeRef: widget!.placeDoc?.reference,
+                              type: widget!.placeDoc?.placeType,
                             ))) {
                               await currentUserReference!.update({
                                 ...mapToFirestore(
@@ -166,8 +171,8 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                                     'favorites': FieldValue.arrayRemove([
                                       getFavoriteObjFirestoreData(
                                         createFavoriteObjStruct(
-                                          placeRef: widget.placeDoc?.reference,
-                                          type: widget.placeDoc?.placeType,
+                                          placeRef: widget!.placeDoc?.reference,
+                                          type: widget!.placeDoc?.placeType,
                                           clearUnsetFields: false,
                                         ),
                                         true,
@@ -177,7 +182,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                                 ),
                               });
 
-                              await widget.placeDoc!.reference.update({
+                              await widget!.placeDoc!.reference.update({
                                 ...mapToFirestore(
                                   {
                                     'favoritedBy': FieldValue.arrayRemove(
@@ -192,8 +197,8 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                                     'favorites': FieldValue.arrayUnion([
                                       getFavoriteObjFirestoreData(
                                         createFavoriteObjStruct(
-                                          placeRef: widget.placeDoc?.reference,
-                                          type: widget.placeDoc?.placeType,
+                                          placeRef: widget!.placeDoc?.reference,
+                                          type: widget!.placeDoc?.placeType,
                                           clearUnsetFields: false,
                                         ),
                                         true,
@@ -203,7 +208,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                                 ),
                               });
 
-                              await widget.placeDoc!.reference.update({
+                              await widget!.placeDoc!.reference.update({
                                 ...mapToFirestore(
                                   {
                                     'favoritedBy': FieldValue.arrayUnion(
@@ -227,11 +232,11 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                                     size: 22.0,
                                   ),
                                   if ((currentUserDocument?.favorites
-                                              .toList() ??
+                                              ?.toList() ??
                                           [])
                                       .contains(FavoriteObjStruct(
-                                    placeRef: widget.placeDoc?.reference,
-                                    type: widget.placeDoc?.placeType,
+                                    placeRef: widget!.placeDoc?.reference,
+                                    type: widget!.placeDoc?.placeType,
                                   )))
                                     AuthUserStreamWidget(
                                       builder: (context) => Icon(
@@ -259,7 +264,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                       Align(
                         alignment: AlignmentDirectional(-1.0, 0.0),
                         child: Text(
-                          '${widget.eventDoc?.name} - ${widget.placeDoc?.name}',
+                          '${widget!.eventDoc?.name} - ${widget!.placeDoc?.name}',
                           style:
                               FlutterFlowTheme.of(context).bodyMedium.override(
                                     fontFamily: 'Readex Pro',
@@ -306,7 +311,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                       Text(
                         dateTimeFormat(
                           "MMM d, h:00a",
-                          widget.eventDoc!.startTime!,
+                          widget!.eventDoc!.startTime!,
                           locale: FFLocalizations.of(context).languageCode,
                         ),
                         style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -318,7 +323,7 @@ class _EventListItemWidgetState extends State<EventListItemWidget> {
                       Text(
                         '${formatNumber(
                           functions.haversineDistance(currentUserLocationValue!,
-                              widget.placeDoc!.coordinates!),
+                              widget!.placeDoc!.coordinates!),
                           formatType: FormatType.custom,
                           format: '###.0#',
                           locale: '',

@@ -1,10 +1,14 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/index.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'profile_page_model.dart';
 export 'profile_page_model.dart';
@@ -588,8 +592,8 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
                             value: _model.switchValue!,
                             onChanged: (newValue) async {
                               safeSetState(
-                                  () => _model.switchValue = newValue);
-                              if (newValue) {
+                                  () => _model.switchValue = newValue!);
+                              if (newValue!) {
                                 FFAppState().darkMode = true;
                                 safeSetState(() {});
                                 setDarkModeSetting(context, ThemeMode.dark);

@@ -1,11 +1,16 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'admin_place_list_item_model.dart';
 export 'admin_place_list_item_model.dart';
 
@@ -96,7 +101,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
               AdminViewPlaceWidget.routeName,
               queryParameters: {
                 'placeRef': serializeParam(
-                  widget.placeRef,
+                  widget!.placeRef,
                   ParamType.DocumentReference,
                 ),
               }.withoutNulls,
@@ -113,7 +118,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: Image.network(
-                      widget.bannerImg!,
+                      widget!.bannerImg!,
                     ).image,
                   ),
                   borderRadius: BorderRadius.circular(10.0),
@@ -129,10 +134,10 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                       hoverColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () async {
-                        if ((currentUserDocument?.favorites.toList() ?? [])
+                        if ((currentUserDocument?.favorites?.toList() ?? [])
                             .contains(FavoriteObjStruct(
-                          placeRef: widget.placeRef,
-                          type: widget.placeType,
+                          placeRef: widget!.placeRef,
+                          type: widget!.placeType,
                         ))) {
                           await currentUserReference!.update({
                             ...mapToFirestore(
@@ -140,8 +145,8 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                                 'favorites': FieldValue.arrayRemove([
                                   getFavoriteObjFirestoreData(
                                     createFavoriteObjStruct(
-                                      placeRef: widget.placeRef,
-                                      type: widget.placeType,
+                                      placeRef: widget!.placeRef,
+                                      type: widget!.placeType,
                                       clearUnsetFields: false,
                                     ),
                                     true,
@@ -151,7 +156,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                             ),
                           });
 
-                          await widget.placeRef!.update({
+                          await widget!.placeRef!.update({
                             ...mapToFirestore(
                               {
                                 'favoritedBy': FieldValue.arrayRemove(
@@ -166,8 +171,8 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                                 'favorites': FieldValue.arrayUnion([
                                   getFavoriteObjFirestoreData(
                                     createFavoriteObjStruct(
-                                      placeRef: widget.placeRef,
-                                      type: widget.placeType,
+                                      placeRef: widget!.placeRef,
+                                      type: widget!.placeType,
                                       clearUnsetFields: false,
                                     ),
                                     true,
@@ -177,7 +182,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                             ),
                           });
 
-                          await widget.placeRef!.update({
+                          await widget!.placeRef!.update({
                             ...mapToFirestore(
                               {
                                 'favoritedBy': FieldValue.arrayUnion(
@@ -195,7 +200,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                           alignment: AlignmentDirectional(0.0, 0.0),
                           child: Stack(
                             children: [
-                              if (!widget.favoritedBy!
+                              if (!widget!.favoritedBy!
                                   .contains(currentUserReference))
                                 Icon(
                                   Icons.favorite_border,
@@ -203,7 +208,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                                       .primaryBackground,
                                   size: 22.0,
                                 ),
-                              if (widget.favoritedBy
+                              if (widget!.favoritedBy
                                       ?.contains(currentUserReference) ??
                                   true)
                                 Icon(
@@ -226,7 +231,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                   Align(
                     alignment: AlignmentDirectional(-1.0, 0.0),
                     child: Text(
-                      widget.name!,
+                      widget!.name!,
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                             fontFamily: 'Readex Pro',
                             letterSpacing: 0.0,
@@ -236,7 +241,7 @@ class _AdminPlaceListItemWidgetState extends State<AdminPlaceListItemWidget> {
                   Text(
                     '${formatNumber(
                       functions.haversineDistance(
-                          currentUserLocationValue!, widget.coordinates!),
+                          currentUserLocationValue!, widget!.coordinates!),
                       formatType: FormatType.custom,
                       format: '###.0#',
                       locale: '',

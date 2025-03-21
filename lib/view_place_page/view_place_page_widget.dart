@@ -1,14 +1,22 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/index.dart';
 import 'package:map_launcher/map_launcher.dart' as $ml;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'view_place_page_model.dart';
 export 'view_place_page_model.dart';
 
@@ -136,7 +144,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                     children: [
                       Hero(
                         tag: valueOrDefault<String>(
-                          widget.placeDoc?.bannerImg,
+                          widget!.placeDoc?.bannerImg,
                           'https://picsum.photos/seed/809/600',
                         ),
                         transitionOnUserGestures: true,
@@ -149,7 +157,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                           ),
                           child: Image.network(
                             valueOrDefault<String>(
-                              widget.placeDoc?.bannerImg,
+                              widget!.placeDoc?.bannerImg,
                               'https://picsum.photos/seed/809/600',
                             ),
                             width: double.infinity,
@@ -219,7 +227,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                   alignment: AlignmentDirectional(0.0, 1.0),
                   child: StreamBuilder<List<EventsRecord>>(
                     stream: queryEventsRecord(
-                      parent: widget.placeDoc?.reference,
+                      parent: widget!.placeDoc?.reference,
                       limit: 1,
                     ),
                     builder: (context, snapshot) {
@@ -268,7 +276,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                             AlignmentDirectional(-1.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
-                                            widget.placeDoc?.name,
+                                            widget!.placeDoc?.name,
                                             'N/A',
                                           ),
                                           textAlign: TextAlign.start,
@@ -296,7 +304,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                               ),
                                               Text(
                                                 valueOrDefault<String>(
-                                                  widget.placeDoc?.address,
+                                                  widget!.placeDoc?.address,
                                                   'N/A',
                                                 ),
                                                 style:
@@ -347,7 +355,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                             AlignmentDirectional(-1.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
-                                            widget.placeDoc?.description,
+                                            widget!.placeDoc?.description,
                                             'N/A',
                                           ),
                                           style: FlutterFlowTheme.of(context)
@@ -368,8 +376,8 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                               width: double.infinity,
                                               height: 150.0,
                                               placeImg:
-                                                  widget.placeDoc!.markerIcon,
-                                              placePoint: widget
+                                                  widget!.placeDoc!.markerIcon,
+                                              placePoint: widget!
                                                   .placeDoc!.coordinates!,
                                             ),
                                           ),
@@ -381,9 +389,9 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                             onTap: () async {
                                               await launchMap(
                                                 mapType: $ml.MapType.google,
-                                                location: widget
+                                                location: widget!
                                                     .placeDoc?.coordinates,
-                                                title: widget.placeDoc!.name,
+                                                title: widget!.placeDoc!.name,
                                               );
                                             },
                                             child: Container(
@@ -421,7 +429,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                               EventsWidget.routeName,
                                               queryParameters: {
                                                 'placeRef': serializeParam(
-                                                  widget.placeDoc?.reference,
+                                                  widget!.placeDoc?.reference,
                                                   ParamType.DocumentReference,
                                                 ),
                                               }.withoutNulls,
@@ -469,12 +477,12 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
                                           if ((currentUserDocument?.favorites
-                                                      .toList() ??
+                                                      ?.toList() ??
                                                   [])
                                               .contains(FavoriteObjStruct(
                                             placeRef:
-                                                widget.placeDoc?.reference,
-                                            type: widget.placeDoc?.placeType,
+                                                widget!.placeDoc?.reference,
+                                            type: widget!.placeDoc?.placeType,
                                           ))) {
                                             await currentUserReference!.update({
                                               ...mapToFirestore(
@@ -483,10 +491,10 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                                       FieldValue.arrayRemove([
                                                     getFavoriteObjFirestoreData(
                                                       createFavoriteObjStruct(
-                                                        placeRef: widget
+                                                        placeRef: widget!
                                                             .placeDoc
                                                             ?.reference,
-                                                        type: widget.placeDoc
+                                                        type: widget!.placeDoc
                                                             ?.placeType,
                                                         clearUnsetFields: false,
                                                       ),
@@ -497,7 +505,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                               ),
                                             });
 
-                                            await widget.placeDoc!.reference
+                                            await widget!.placeDoc!.reference
                                                 .update({
                                               ...mapToFirestore(
                                                 {
@@ -516,10 +524,10 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                                       FieldValue.arrayUnion([
                                                     getFavoriteObjFirestoreData(
                                                       createFavoriteObjStruct(
-                                                        placeRef: widget
+                                                        placeRef: widget!
                                                             .placeDoc
                                                             ?.reference,
-                                                        type: widget.placeDoc
+                                                        type: widget!.placeDoc
                                                             ?.placeType,
                                                         clearUnsetFields: false,
                                                       ),
@@ -530,7 +538,7 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                               ),
                                             });
 
-                                            await widget.placeDoc!.reference
+                                            await widget!.placeDoc!.reference
                                                 .update({
                                               ...mapToFirestore(
                                                 {
@@ -557,13 +565,13 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                             children: [
                                               if (!(currentUserDocument
                                                           ?.favorites
-                                                          .toList() ??
+                                                          ?.toList() ??
                                                       [])
                                                   .contains(FavoriteObjStruct(
                                                 placeRef:
-                                                    widget.placeDoc?.reference,
+                                                    widget!.placeDoc?.reference,
                                                 type:
-                                                    widget.placeDoc?.placeType,
+                                                    widget!.placeDoc?.placeType,
                                               )))
                                                 Align(
                                                   alignment:
@@ -581,13 +589,13 @@ class _ViewPlacePageWidgetState extends State<ViewPlacePageWidget>
                                                 ),
                                               if ((currentUserDocument
                                                           ?.favorites
-                                                          .toList() ??
+                                                          ?.toList() ??
                                                       [])
                                                   .contains(FavoriteObjStruct(
                                                 placeRef:
-                                                    widget.placeDoc?.reference,
+                                                    widget!.placeDoc?.reference,
                                                 type:
-                                                    widget.placeDoc?.placeType,
+                                                    widget!.placeDoc?.placeType,
                                               )))
                                                 Align(
                                                   alignment:

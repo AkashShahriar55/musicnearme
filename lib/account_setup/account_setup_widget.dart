@@ -4,11 +4,18 @@ import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'account_setup_model.dart';
 export 'account_setup_model.dart';
 
@@ -308,9 +315,11 @@ class _AccountSetupWidgetState extends State<AccountSetupWidget> {
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () async {
-                    if (((_model.uploadedLocalFile1.bytes?.isNotEmpty ??
+                    if ((_model.uploadedLocalFile1 != null &&
+                            (_model.uploadedLocalFile1.bytes?.isNotEmpty ??
                                 false)) &&
-                        (_model.displayNameTextController.text != '')) {
+                        (_model.displayNameTextController.text != null &&
+                            _model.displayNameTextController.text != '')) {
                       {
                         safeSetState(() => _model.isDataUploading2 = true);
                         var selectedUploadedFiles = <FFUploadedFile>[];
@@ -386,10 +395,13 @@ class _AccountSetupWidgetState extends State<AccountSetupWidget> {
                     height: 55.0,
                     decoration: BoxDecoration(
                       color: valueOrDefault<Color>(
-                        ((_model.uploadedLocalFile1.bytes
+                        (_model.uploadedLocalFile1 != null &&
+                                    (_model.uploadedLocalFile1.bytes
                                             ?.isNotEmpty ??
                                         false)) &&
-                                (_model.displayNameTextController.text != '')
+                                (_model.displayNameTextController.text !=
+                                        null &&
+                                    _model.displayNameTextController.text != '')
                             ? FlutterFlowTheme.of(context).primary
                             : Color(0xFFC2AF8E),
                         Color(0xFFC2AF8E),

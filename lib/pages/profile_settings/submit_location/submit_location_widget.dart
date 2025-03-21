@@ -10,10 +10,15 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'submit_location_model.dart';
 export 'submit_location_model.dart';
@@ -44,9 +49,11 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
       currentUserLocationValue =
           await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
       _model.locationData = await ReverseGeocodeCall.call(
-        longitude: functions.getLatOrLong('lat', currentUserLocationValue!),
-        latitude: functions.getLatOrLong('long', currentUserLocationValue!),
-        token: 'f',
+        longitude:
+            functions.getLatOrLong('longitude', currentUserLocationValue!),
+        latitude: functions.getLatOrLong('latitude', currentUserLocationValue!),
+        token:
+            'pk.eyJ1IjoiYnJhbnNtYXBib3hhY2MiLCJhIjoiY2x5N2dudmxnMDVxeDJrb2pjaGZqNHR5cCJ9.JpLCapjb4ND8mIOW7g4utQ',
       );
 
       _model.locationDatajson = (_model.locationData?.jsonBody ?? '');

@@ -1,11 +1,16 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'place_list_item_model.dart';
 export 'place_list_item_model.dart';
 
@@ -87,12 +92,12 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
               ViewPlacePageWidget.routeName,
               queryParameters: {
                 'placeDoc': serializeParam(
-                  widget.placeDoc,
+                  widget!.placeDoc,
                   ParamType.Document,
                 ),
               }.withoutNulls,
               extra: <String, dynamic>{
-                'placeDoc': widget.placeDoc,
+                'placeDoc': widget!.placeDoc,
               },
             );
           },
@@ -103,7 +108,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                 children: [
                   Hero(
                     tag: valueOrDefault<String>(
-                      widget.placeDoc?.bannerImg,
+                      widget!.placeDoc?.bannerImg,
                       'https://picsum.photos/200/300',
                     ),
                     transitionOnUserGestures: true,
@@ -111,7 +116,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                       borderRadius: BorderRadius.circular(10.0),
                       child: Image.network(
                         valueOrDefault<String>(
-                          widget.placeDoc?.bannerImg,
+                          widget!.placeDoc?.bannerImg,
                           'https://picsum.photos/200/300',
                         ),
                         width: double.infinity,
@@ -155,10 +160,10 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            if ((currentUserDocument?.favorites.toList() ?? [])
+                            if ((currentUserDocument?.favorites?.toList() ?? [])
                                 .contains(FavoriteObjStruct(
-                              placeRef: widget.placeDoc?.reference,
-                              type: widget.placeDoc?.placeType,
+                              placeRef: widget!.placeDoc?.reference,
+                              type: widget!.placeDoc?.placeType,
                             ))) {
                               await currentUserReference!.update({
                                 ...mapToFirestore(
@@ -166,8 +171,8 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                                     'favorites': FieldValue.arrayRemove([
                                       getFavoriteObjFirestoreData(
                                         createFavoriteObjStruct(
-                                          placeRef: widget.placeDoc?.reference,
-                                          type: widget.placeDoc?.placeType,
+                                          placeRef: widget!.placeDoc?.reference,
+                                          type: widget!.placeDoc?.placeType,
                                           clearUnsetFields: false,
                                         ),
                                         true,
@@ -177,7 +182,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                                 ),
                               });
 
-                              await widget.placeDoc!.reference.update({
+                              await widget!.placeDoc!.reference.update({
                                 ...mapToFirestore(
                                   {
                                     'favoritedBy': FieldValue.arrayRemove(
@@ -193,8 +198,8 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                                     'favorites': FieldValue.arrayUnion([
                                       getFavoriteObjFirestoreData(
                                         createFavoriteObjStruct(
-                                          placeRef: widget.placeDoc?.reference,
-                                          type: widget.placeDoc?.placeType,
+                                          placeRef: widget!.placeDoc?.reference,
+                                          type: widget!.placeDoc?.placeType,
                                           clearUnsetFields: false,
                                         ),
                                         true,
@@ -204,7 +209,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                                 ),
                               });
 
-                              await widget.placeDoc!.reference.update({
+                              await widget!.placeDoc!.reference.update({
                                 ...mapToFirestore(
                                   {
                                     'favoritedBy': FieldValue.arrayUnion(
@@ -228,11 +233,11 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                                     size: 22.0,
                                   ),
                                   if ((currentUserDocument?.favorites
-                                              .toList() ??
+                                              ?.toList() ??
                                           [])
                                       .contains(FavoriteObjStruct(
-                                    placeRef: widget.placeDoc?.reference,
-                                    type: widget.placeDoc?.placeType,
+                                    placeRef: widget!.placeDoc?.reference,
+                                    type: widget!.placeDoc?.placeType,
                                   )))
                                     AuthUserStreamWidget(
                                       builder: (context) => Icon(
@@ -258,7 +263,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                     alignment: AlignmentDirectional(-1.0, 0.0),
                     child: Text(
                       valueOrDefault<String>(
-                        widget.placeDoc?.name,
+                        widget!.placeDoc?.name,
                         'N/A',
                       ),
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -270,7 +275,7 @@ class _PlaceListItemWidgetState extends State<PlaceListItemWidget> {
                   Text(
                     '${formatNumber(
                       functions.haversineDistance(currentUserLocationValue!,
-                          widget.placeDoc!.coordinates!),
+                          widget!.placeDoc!.coordinates!),
                       formatType: FormatType.custom,
                       format: '###.0#',
                       locale: '',

@@ -2,11 +2,18 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'register_model.dart';
 export 'register_model.dart';
 
@@ -385,11 +392,17 @@ class _RegisterWidgetState extends State<RegisterWidget>
                           height: 50.0,
                           decoration: BoxDecoration(
                             color: valueOrDefault<Color>(
-                              (_model.emailTextController.text ==
+                              (_model.emailTextController.text == null ||
+                                          _model.emailTextController.text ==
                                               '') ||
                                       (_model.passwordTextController.text ==
+                                              null ||
+                                          _model.passwordTextController.text ==
                                               '') ||
                                       (_model.confirmPasswordTextController
+                                                  .text ==
+                                              null ||
+                                          _model.confirmPasswordTextController
                                                   .text ==
                                               '')
                                   ? FlutterFlowTheme.of(context).secondary

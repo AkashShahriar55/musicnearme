@@ -1,15 +1,21 @@
 import '';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/components/no_events_component_widget.dart';
 import '/flutter_flow/flutter_flow_calendar.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'events_component_model.dart';
 export 'events_component_model.dart';
@@ -56,7 +62,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
           functions.convertDateToString(getCurrentTimestamp);
       safeSetState(() {});
       _model.eventsQuery = await queryEventsRecordOnce(
-        parent: widget.placeRef,
+        parent: widget!.placeRef,
         queryBuilder: (eventsRecord) => eventsRecord.where(
           'startTime',
           isGreaterThan: getCurrentTimestamp,
@@ -84,7 +90,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.showViews)
+        if (widget!.showViews)
           Align(
             alignment: AlignmentDirectional(0.0, 1.0),
             child: Material(
@@ -224,7 +230,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                         0,
                         min(
                             valueOrDefault<int>(
-                              widget.initialPage,
+                              widget!.initialPage,
                               0,
                             ),
                             1))),
@@ -451,10 +457,10 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                                                               children: [
                                                                 if ((currentUserDocument
                                                                             ?.places
-                                                                            .toList() ??
+                                                                            ?.toList() ??
                                                                         [])
                                                                     .contains(
-                                                                        widget
+                                                                        widget!
                                                                             .placeRef))
                                                                   AuthUserStreamWidget(
                                                                     builder:
@@ -505,7 +511,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                                                                           _model.eventsQueryAfterDeleteListview =
                                                                               await queryEventsRecordOnce(
                                                                             parent:
-                                                                                widget.placeRef,
+                                                                                widget!.placeRef,
                                                                           );
                                                                           _shouldSetState =
                                                                               true;
@@ -640,7 +646,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                         ),
                         StreamBuilder<List<EventsRecord>>(
                           stream: queryEventsRecord(
-                            parent: widget.placeRef,
+                            parent: widget!.placeRef,
                             queryBuilder: (eventsRecord) => eventsRecord.where(
                               'dateAsString',
                               isEqualTo: functions.convertDateToString(
@@ -775,9 +781,9 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                                                 MainAxisAlignment.end,
                                             children: [
                                               if ((currentUserDocument?.places
-                                                          .toList() ??
+                                                          ?.toList() ??
                                                       [])
-                                                  .contains(widget.placeRef))
+                                                  .contains(widget!.placeRef))
                                                 AuthUserStreamWidget(
                                                   builder: (context) => InkWell(
                                                     splashColor:
@@ -832,7 +838,7 @@ class _EventsComponentWidgetState extends State<EventsComponentWidget> {
                                                         _model.eventQueryAfterDeleteCalendar =
                                                             await queryEventsRecordOnce(
                                                           parent:
-                                                              widget.placeRef,
+                                                              widget!.placeRef,
                                                         );
                                                         _model.newEventsAfterDeleteCalendar =
                                                             await actions
