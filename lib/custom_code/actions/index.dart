@@ -4,5 +4,3 @@ export 'get_route_from_points.dart' show getRouteFromPoints;
 export 'print_action.dart' show printAction;
 export 'get_location_in_background.dart' show getLocationInBackground;
 export 'debug_a_p_i_call.dart' show debugAPICall;
-export 'get_address_from_location_geocode.dart'
-    show getAddressFromLocationGeocode;
