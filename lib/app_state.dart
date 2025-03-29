@@ -563,6 +563,16 @@ class FFAppState extends ChangeNotifier {
     selectedLocationFromSelector.insert(index, value);
   }
 
+  LocationInfoStruct _selectedLocation = LocationInfoStruct();
+  LocationInfoStruct get selectedLocation => _selectedLocation;
+  set selectedLocation(LocationInfoStruct value) {
+    _selectedLocation = value;
+  }
+
+  void updateSelectedLocationStruct(Function(LocationInfoStruct) updateFn) {
+    updateFn(_selectedLocation);
+  }
+
   final _allPlacesCacheManager = StreamRequestManager<List<PlacesRecord>>();
   Stream<List<PlacesRecord>> allPlacesCache({
     String? uniqueQueryKey,

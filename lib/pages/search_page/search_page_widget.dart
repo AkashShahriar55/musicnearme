@@ -1,4 +1,3 @@
-import '';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/components/shimmer_load_places_widget.dart';

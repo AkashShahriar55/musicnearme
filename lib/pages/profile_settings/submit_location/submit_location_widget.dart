@@ -1,23 +1,28 @@
-import '';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/backend/schema/structs/index.dart';
 import '/components/how_do_i_know_widget.dart';
+import '/components/search_location_bottom_sheet_widget.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:math';
 import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'submit_location_model.dart';
@@ -33,11 +38,14 @@ class SubmitLocationWidget extends StatefulWidget {
   State<SubmitLocationWidget> createState() => _SubmitLocationWidgetState();
 }
 
-class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
+class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
+    with TickerProviderStateMixin {
   late SubmitLocationModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   LatLng? currentUserLocationValue;
+
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -48,6 +56,9 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       currentUserLocationValue =
           await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
+      // fetching started
+      _model.isLocationDataFetching = true;
+      safeSetState(() {});
       _model.locationData = await ReverseGeocodeCall.call(
         longitude:
             functions.getLatOrLong('longitude', currentUserLocationValue!),
@@ -57,6 +68,28 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
       );
 
       _model.locationDatajson = (_model.locationData?.jsonBody ?? '');
+      _model.isLocationDataFetching = false;
+      _model.currentLocationInfo = LocationInfoStruct(
+        latlng: LatLongDataStruct(
+          latitude:
+              functions.getLatOrLong('latitude', currentUserLocationValue!),
+          longitude:
+              functions.getLatOrLong('longitude', currentUserLocationValue!),
+        ),
+        address: ReverseGeocodeCall.fullAddress(
+          (_model.locationData?.jsonBody ?? ''),
+        ),
+      );
+      safeSetState(() {});
+      FFAppState().selectedLocation = LocationInfoStruct(
+        latlng:
+            LatLongDataStruct.maybeFromMap(ReverseGeocodeCall.currentLatLong(
+          (_model.locationData?.jsonBody ?? ''),
+        )),
+        address: ReverseGeocodeCall.fullAddress(
+          (_model.locationData?.jsonBody ?? ''),
+        ),
+      );
       safeSetState(() {});
     });
 
@@ -75,6 +108,22 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
     _model.websiteLinkTextController ??= TextEditingController();
     _model.websiteLinkFocusNode ??= FocusNode();
 
+    animationsMap.addAll({
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeIn,
+            delay: 0.0.ms,
+            duration: 600.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+        ],
+      ),
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -87,6 +136,8 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -282,36 +333,105 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                       fontWeight: FontWeight.w600,
                                     ),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFF8F8F8),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                  ),
-                                ),
-                                child: Align(
-                                  alignment: AlignmentDirectional(-1.0, 0.0),
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        8.0, 15.0, 8.0, 15.0),
-                                    child: Text(
-                                      valueOrDefault<String>(
-                                        getJsonField(
-                                          _model.locationDatajson,
-                                          r'''$.features[:].properties.full_address''',
-                                        )?.toString(),
-                                        'No address found!',
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily: 'Readex Pro',
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w600,
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  if (!_model.isLocationDataFetching) {
+                                    await showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      backgroundColor:
+                                          FlutterFlowTheme.of(context)
+                                              .primaryBackground,
+                                      enableDrag: false,
+                                      context: context,
+                                      builder: (context) {
+                                        return WebViewAware(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              FocusScope.of(context).unfocus();
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                            child: Padding(
+                                              padding: MediaQuery.viewInsetsOf(
+                                                  context),
+                                              child:
+                                                  SearchLocationBottomSheetWidget(
+                                                currentLocationInfoFromPage:
+                                                    _model.currentLocationInfo!,
+                                              ),
+                                            ),
                                           ),
+                                        );
+                                      },
+                                    ).then((value) => safeSetState(() {}));
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFF8F8F8),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(
+                                      color: FlutterFlowTheme.of(context)
+                                          .alternate,
                                     ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Align(
+                                          alignment:
+                                              AlignmentDirectional(-1.0, 0.0),
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    8.0, 15.0, 8.0, 15.0),
+                                            child: Text(
+                                              valueOrDefault<String>(
+                                                FFAppState()
+                                                    .selectedLocation
+                                                    .address,
+                                                'No location found!',
+                                              ),
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    fontFamily: 'Readex Pro',
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      if (_model.isLocationDataFetching)
+                                        Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  10.0, 0.0, 10.0, 0.0),
+                                          child: CircularPercentIndicator(
+                                            percent: 0.5,
+                                            radius: 15.0,
+                                            lineWidth: 3.0,
+                                            animation: true,
+                                            animateFromLastPercent: true,
+                                            progressColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primary,
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .accent4,
+                                          ).animateOnPageLoad(animationsMap[
+                                              'progressBarOnPageLoadAnimation']!),
+                                        ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -758,144 +878,170 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget> {
                                 currentUserLocationValue =
                                     await getCurrentUserLocation(
                                         defaultLocation: LatLng(0.0, 0.0));
-                                {
+                                _model.isFormValidated = true;
+                                if (_model.formKey.currentState == null ||
+                                    !_model.formKey.currentState!.validate()) {
                                   safeSetState(
-                                      () => _model.isDataUploading2 = true);
-                                  var selectedUploadedFiles =
-                                      <FFUploadedFile>[];
-                                  var selectedMedia = <SelectedFile>[];
-                                  var downloadUrls = <String>[];
-                                  try {
-                                    showUploadMessage(
-                                      context,
-                                      'Uploading file...',
-                                      showLoading: true,
-                                    );
-                                    selectedUploadedFiles = _model
-                                            .uploadedLocalFile1
-                                            .bytes!
-                                            .isNotEmpty
-                                        ? [_model.uploadedLocalFile1]
-                                        : <FFUploadedFile>[];
-                                    selectedMedia =
-                                        selectedFilesFromUploadedFiles(
-                                      selectedUploadedFiles,
-                                    );
-                                    downloadUrls = (await Future.wait(
-                                      selectedMedia.map(
-                                        (m) async => await uploadData(
-                                            m.storagePath, m.bytes),
-                                      ),
-                                    ))
-                                        .where((u) => u != null)
-                                        .map((u) => u!)
-                                        .toList();
-                                  } finally {
-                                    ScaffoldMessenger.of(context)
-                                        .hideCurrentSnackBar();
-                                    _model.isDataUploading2 = false;
-                                  }
-                                  if (selectedUploadedFiles.length ==
-                                          selectedMedia.length &&
-                                      downloadUrls.length ==
-                                          selectedMedia.length) {
-                                    safeSetState(() {
-                                      _model.uploadedLocalFile2 =
-                                          selectedUploadedFiles.first;
-                                      _model.uploadedFileUrl2 =
-                                          downloadUrls.first;
-                                    });
-                                    showUploadMessage(context, 'Success!');
-                                  } else {
-                                    safeSetState(() {});
-                                    showUploadMessage(
-                                        context, 'Failed to upload data');
-                                    return;
-                                  }
+                                      () => _model.isFormValidated = false);
+                                  return;
                                 }
+                                if (_model.uploadedLocalFile1 == null ||
+                                    (_model.uploadedLocalFile1.bytes ?? [])
+                                        .isEmpty) {
+                                  _model.isFormValidated = false;
+                                  safeSetState(() {});
+                                  return;
+                                }
+                                if (_model.uploadedFileUrl2 == null ||
+                                    _model.uploadedFileUrl2.isEmpty) {
+                                  _model.isFormValidated = false;
+                                  safeSetState(() {});
+                                  return;
+                                }
+                                if (_model.isFormValidated == true) {
+                                  {
+                                    safeSetState(
+                                        () => _model.isDataUploading2 = true);
+                                    var selectedUploadedFiles =
+                                        <FFUploadedFile>[];
+                                    var selectedMedia = <SelectedFile>[];
+                                    var downloadUrls = <String>[];
+                                    try {
+                                      showUploadMessage(
+                                        context,
+                                        'Uploading file...',
+                                        showLoading: true,
+                                      );
+                                      selectedUploadedFiles = _model
+                                              .uploadedLocalFile1
+                                              .bytes!
+                                              .isNotEmpty
+                                          ? [_model.uploadedLocalFile1]
+                                          : <FFUploadedFile>[];
+                                      selectedMedia =
+                                          selectedFilesFromUploadedFiles(
+                                        selectedUploadedFiles,
+                                      );
+                                      downloadUrls = (await Future.wait(
+                                        selectedMedia.map(
+                                          (m) async => await uploadData(
+                                              m.storagePath, m.bytes),
+                                        ),
+                                      ))
+                                          .where((u) => u != null)
+                                          .map((u) => u!)
+                                          .toList();
+                                    } finally {
+                                      ScaffoldMessenger.of(context)
+                                          .hideCurrentSnackBar();
+                                      _model.isDataUploading2 = false;
+                                    }
+                                    if (selectedUploadedFiles.length ==
+                                            selectedMedia.length &&
+                                        downloadUrls.length ==
+                                            selectedMedia.length) {
+                                      safeSetState(() {
+                                        _model.uploadedLocalFile2 =
+                                            selectedUploadedFiles.first;
+                                        _model.uploadedFileUrl2 =
+                                            downloadUrls.first;
+                                      });
+                                      showUploadMessage(context, 'Success!');
+                                    } else {
+                                      safeSetState(() {});
+                                      showUploadMessage(
+                                          context, 'Failed to upload data');
+                                      return;
+                                    }
+                                  }
 
-                                var placesRecordReference =
-                                    PlacesRecord.collection.doc();
-                                await placesRecordReference.set({
-                                  ...createPlacesRecordData(
-                                    coordinates: functions.convertLatLong(
-                                        functions
-                                            .getLatOrLong('latitude',
-                                                currentUserLocationValue!)
-                                            .toString(),
-                                        functions
-                                            .getLatOrLong('longitude',
-                                                currentUserLocationValue!)
-                                            .toString()),
-                                    createdBy: currentUserReference,
-                                    bannerImg: _model.uploadedFileUrl2,
-                                    markerIcon: functions.placeTypeSelector(
-                                        _model.choiceChipsValue!),
-                                    websiteLink:
-                                        _model.websiteLinkTextController.text,
-                                    name:
-                                        _model.yourFullNameTextController.text,
-                                    location: getJsonField(
-                                      _model.locationDatajson,
-                                      r'''$.features[:].properties.full_address''',
-                                    ).toString(),
-                                    placeType: _model.choiceChipsValue,
-                                    description: _model
-                                        .businessDescriptionTextController.text,
-                                  ),
-                                  ...mapToFirestore(
-                                    {
-                                      'nameSplit': functions.nameSplitFunction(
-                                          _model
-                                              .businessNameTextController.text),
-                                    },
-                                  ),
-                                });
-                                _model.createdPlace =
-                                    PlacesRecord.getDocumentFromData({
-                                  ...createPlacesRecordData(
-                                    coordinates: functions.convertLatLong(
-                                        functions
-                                            .getLatOrLong('latitude',
-                                                currentUserLocationValue!)
-                                            .toString(),
-                                        functions
-                                            .getLatOrLong('longitude',
-                                                currentUserLocationValue!)
-                                            .toString()),
-                                    createdBy: currentUserReference,
-                                    bannerImg: _model.uploadedFileUrl2,
-                                    markerIcon: functions.placeTypeSelector(
-                                        _model.choiceChipsValue!),
-                                    websiteLink:
-                                        _model.websiteLinkTextController.text,
-                                    name:
-                                        _model.yourFullNameTextController.text,
-                                    location: getJsonField(
-                                      _model.locationDatajson,
-                                      r'''$.features[:].properties.full_address''',
-                                    ).toString(),
-                                    placeType: _model.choiceChipsValue,
-                                    description: _model
-                                        .businessDescriptionTextController.text,
-                                  ),
-                                  ...mapToFirestore(
-                                    {
-                                      'nameSplit': functions.nameSplitFunction(
-                                          _model
-                                              .businessNameTextController.text),
-                                    },
-                                  ),
-                                }, placesRecordReference);
+                                  var placesRecordReference =
+                                      PlacesRecord.collection.doc();
+                                  await placesRecordReference.set({
+                                    ...createPlacesRecordData(
+                                      coordinates: functions.convertLatLong(
+                                          FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .latitude
+                                              .toString(),
+                                          FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .longitude
+                                              .toString()),
+                                      createdBy: currentUserReference,
+                                      bannerImg: _model.uploadedFileUrl2,
+                                      markerIcon: functions.placeTypeSelector(
+                                          _model.choiceChipsValue!),
+                                      websiteLink:
+                                          _model.websiteLinkTextController.text,
+                                      name: _model
+                                          .yourFullNameTextController.text,
+                                      location:
+                                          FFAppState().selectedLocation.address,
+                                      placeType: _model.choiceChipsValue,
+                                      description: _model
+                                          .businessDescriptionTextController
+                                          .text,
+                                    ),
+                                    ...mapToFirestore(
+                                      {
+                                        'nameSplit':
+                                            functions.nameSplitFunction(_model
+                                                .businessNameTextController
+                                                .text),
+                                      },
+                                    ),
+                                  });
+                                  _model.createdPlace =
+                                      PlacesRecord.getDocumentFromData({
+                                    ...createPlacesRecordData(
+                                      coordinates: functions.convertLatLong(
+                                          FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .latitude
+                                              .toString(),
+                                          FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .longitude
+                                              .toString()),
+                                      createdBy: currentUserReference,
+                                      bannerImg: _model.uploadedFileUrl2,
+                                      markerIcon: functions.placeTypeSelector(
+                                          _model.choiceChipsValue!),
+                                      websiteLink:
+                                          _model.websiteLinkTextController.text,
+                                      name: _model
+                                          .yourFullNameTextController.text,
+                                      location:
+                                          FFAppState().selectedLocation.address,
+                                      placeType: _model.choiceChipsValue,
+                                      description: _model
+                                          .businessDescriptionTextController
+                                          .text,
+                                    ),
+                                    ...mapToFirestore(
+                                      {
+                                        'nameSplit':
+                                            functions.nameSplitFunction(_model
+                                                .businessNameTextController
+                                                .text),
+                                      },
+                                    ),
+                                  }, placesRecordReference);
 
-                                await currentUserReference!.update({
-                                  ...mapToFirestore(
-                                    {
-                                      'places': FieldValue.arrayUnion(
-                                          [_model.createdPlace?.reference]),
-                                    },
-                                  ),
-                                });
+                                  await currentUserReference!.update({
+                                    ...mapToFirestore(
+                                      {
+                                        'places': FieldValue.arrayUnion(
+                                            [_model.createdPlace?.reference]),
+                                      },
+                                    ),
+                                  });
+                                }
 
                                 safeSetState(() {});
                               },

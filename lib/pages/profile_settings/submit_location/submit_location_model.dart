@@ -1,24 +1,29 @@
-import '';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/backend/schema/structs/index.dart';
 import '/components/how_do_i_know_widget.dart';
+import '/components/search_location_bottom_sheet_widget.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:math';
 import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'submit_location_widget.dart' show SubmitLocationWidget;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
@@ -26,6 +31,13 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
   ///  Local state fields for this page.
   /// this is json data of location
   dynamic locationDatajson;
+
+  bool isLocationDataFetching = false;
+
+  LocationInfoStruct? currentLocationInfo;
+  void updateCurrentLocationInfoStruct(Function(LocationInfoStruct) updateFn) {
+    updateFn(currentLocationInfo ??= LocationInfoStruct());
+  }
 
   ///  State fields for stateful widgets in this page.
 
@@ -114,6 +126,8 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
       choiceChipsValueController?.value?.firstOrNull;
   set choiceChipsValue(String? val) =>
       choiceChipsValueController?.value = val != null ? [val] : [];
+  // Stores action output result for [Validate Form] action in Button widget.
+  bool? isFormValidated;
   bool isDataUploading2 = false;
   FFUploadedFile uploadedLocalFile2 =
       FFUploadedFile(bytes: Uint8List.fromList([]));
