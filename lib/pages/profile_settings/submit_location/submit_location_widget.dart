@@ -352,7 +352,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                       backgroundColor:
                                           FlutterFlowTheme.of(context)
                                               .primaryBackground,
-                                      enableDrag: false,
+                                      useSafeArea: true,
                                       context: context,
                                       builder: (context) {
                                         return WebViewAware(
@@ -882,9 +882,6 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                 0.0, 20.0, 0.0, 0.0),
                             child: FFButtonWidget(
                               onPressed: () async {
-                                currentUserLocationValue =
-                                    await getCurrentUserLocation(
-                                        defaultLocation: LatLng(0.0, 0.0));
                                 _model.isFormValidated = true;
                                 if (_model.formKey.currentState == null ||
                                     !_model.formKey.currentState!.validate()) {
@@ -979,6 +976,11 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                       }
                                     }
 
+                                    await launchUrl(Uri(
+                                      scheme: 'mailto',
+                                      path: '',
+                                    ));
+
                                     var placesRecordReference =
                                         PlacesRecord.collection.doc();
                                     await placesRecordReference.set({
@@ -1067,6 +1069,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                         },
                                       ),
                                     });
+                                    context.safePop();
                                   }
                                 }
 

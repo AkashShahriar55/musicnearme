@@ -65,14 +65,33 @@ class _NewHomePageWidgetState extends State<NewHomePageWidget>
         callback: (timer) async {
           currentUserLocationValue =
               await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
-          if (!((functions
+          if ((functions
                       .getLatOrLong('latitude', currentUserLocationValue!)
                       .toString() ==
                   '0.0') &&
               (functions
                       .getLatOrLong('longitude', currentUserLocationValue!)
                       .toString() ==
-                  '0.0'))) {
+                  '0.0')) {
+            await showDialog(
+              context: context,
+              builder: (alertDialogContext) {
+                return WebViewAware(
+                  child: AlertDialog(
+                    title: Text('Location Service Needed!'),
+                    content: Text(
+                        'Please turn on your location service to use this feature.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(alertDialogContext),
+                        child: Text('Ok'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else {
             _model.readyLocation?.cancel();
             _model.allPlaces = await queryPlacesRecordOnce(
               limit: 200,
