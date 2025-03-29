@@ -892,19 +892,6 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                       () => _model.isFormValidated = false);
                                   return;
                                 }
-                                if (_model.uploadedLocalFile1 == null ||
-                                    (_model.uploadedLocalFile1.bytes ?? [])
-                                        .isEmpty) {
-                                  _model.isFormValidated = false;
-                                  safeSetState(() {});
-                                  return;
-                                }
-                                if (_model.uploadedFileUrl2 == null ||
-                                    _model.uploadedFileUrl2.isEmpty) {
-                                  _model.isFormValidated = false;
-                                  safeSetState(() {});
-                                  return;
-                                }
                                 if (_model.isFormValidated == true) {
                                   if ((FFAppState()
                                               .selectedLocation
