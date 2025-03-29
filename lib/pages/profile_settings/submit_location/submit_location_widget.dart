@@ -208,7 +208,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                   padding: EdgeInsets.all(16.0),
                   child: Form(
                     key: _model.formKey,
-                    autovalidateMode: AutovalidateMode.disabled,
+                    autovalidateMode: AutovalidateMode.always,
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
@@ -294,26 +294,31 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                           .alternate,
                                     ),
                                   ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Upload Photo',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Readex Pro',
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
-                                      Icon(
-                                        Icons.photo_library,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                        size: 40.0,
-                                      ),
-                                    ].divide(SizedBox(height: 10.0)),
+                                  child: Visibility(
+                                    visible:
+                                        _model.uploadedLocalFile1.height! > 0.0,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Upload Photo',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                fontFamily: 'Readex Pro',
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                        Icon(
+                                          Icons.photo_library,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          size: 40.0,
+                                        ),
+                                      ].divide(SizedBox(height: 10.0)),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -899,148 +904,181 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                   return;
                                 }
                                 if (_model.isFormValidated == true) {
-                                  {
-                                    safeSetState(
-                                        () => _model.isDataUploading2 = true);
-                                    var selectedUploadedFiles =
-                                        <FFUploadedFile>[];
-                                    var selectedMedia = <SelectedFile>[];
-                                    var downloadUrls = <String>[];
-                                    try {
-                                      showUploadMessage(
-                                        context,
-                                        'Uploading file...',
-                                        showLoading: true,
-                                      );
-                                      selectedUploadedFiles = _model
-                                              .uploadedLocalFile1
-                                              .bytes!
-                                              .isNotEmpty
-                                          ? [_model.uploadedLocalFile1]
-                                          : <FFUploadedFile>[];
-                                      selectedMedia =
-                                          selectedFilesFromUploadedFiles(
-                                        selectedUploadedFiles,
-                                      );
-                                      downloadUrls = (await Future.wait(
-                                        selectedMedia.map(
-                                          (m) async => await uploadData(
-                                              m.storagePath, m.bytes),
-                                        ),
-                                      ))
-                                          .where((u) => u != null)
-                                          .map((u) => u!)
-                                          .toList();
-                                    } finally {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                                      _model.isDataUploading2 = false;
+                                  if ((FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .latitude ==
+                                          0.0) &&
+                                      (FFAppState()
+                                              .selectedLocation
+                                              .latlng
+                                              .longitude ==
+                                          0.0)) {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (alertDialogContext) {
+                                        return WebViewAware(
+                                          child: AlertDialog(
+                                            title: Text('Location Required!'),
+                                            content: Text(
+                                                'Please turn on location permission and service otherwise select location.'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    alertDialogContext),
+                                                child: Text('Ok'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    {
+                                      safeSetState(
+                                          () => _model.isDataUploading2 = true);
+                                      var selectedUploadedFiles =
+                                          <FFUploadedFile>[];
+                                      var selectedMedia = <SelectedFile>[];
+                                      var downloadUrls = <String>[];
+                                      try {
+                                        showUploadMessage(
+                                          context,
+                                          'Uploading file...',
+                                          showLoading: true,
+                                        );
+                                        selectedUploadedFiles = _model
+                                                .uploadedLocalFile1
+                                                .bytes!
+                                                .isNotEmpty
+                                            ? [_model.uploadedLocalFile1]
+                                            : <FFUploadedFile>[];
+                                        selectedMedia =
+                                            selectedFilesFromUploadedFiles(
+                                          selectedUploadedFiles,
+                                        );
+                                        downloadUrls = (await Future.wait(
+                                          selectedMedia.map(
+                                            (m) async => await uploadData(
+                                                m.storagePath, m.bytes),
+                                          ),
+                                        ))
+                                            .where((u) => u != null)
+                                            .map((u) => u!)
+                                            .toList();
+                                      } finally {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                        _model.isDataUploading2 = false;
+                                      }
+                                      if (selectedUploadedFiles.length ==
+                                              selectedMedia.length &&
+                                          downloadUrls.length ==
+                                              selectedMedia.length) {
+                                        safeSetState(() {
+                                          _model.uploadedLocalFile2 =
+                                              selectedUploadedFiles.first;
+                                          _model.uploadedFileUrl2 =
+                                              downloadUrls.first;
+                                        });
+                                        showUploadMessage(context, 'Success!');
+                                      } else {
+                                        safeSetState(() {});
+                                        showUploadMessage(
+                                            context, 'Failed to upload data');
+                                        return;
+                                      }
                                     }
-                                    if (selectedUploadedFiles.length ==
-                                            selectedMedia.length &&
-                                        downloadUrls.length ==
-                                            selectedMedia.length) {
-                                      safeSetState(() {
-                                        _model.uploadedLocalFile2 =
-                                            selectedUploadedFiles.first;
-                                        _model.uploadedFileUrl2 =
-                                            downloadUrls.first;
-                                      });
-                                      showUploadMessage(context, 'Success!');
-                                    } else {
-                                      safeSetState(() {});
-                                      showUploadMessage(
-                                          context, 'Failed to upload data');
-                                      return;
-                                    }
+
+                                    var placesRecordReference =
+                                        PlacesRecord.collection.doc();
+                                    await placesRecordReference.set({
+                                      ...createPlacesRecordData(
+                                        coordinates: functions.convertLatLong(
+                                            FFAppState()
+                                                .selectedLocation
+                                                .latlng
+                                                .latitude
+                                                .toString(),
+                                            FFAppState()
+                                                .selectedLocation
+                                                .latlng
+                                                .longitude
+                                                .toString()),
+                                        createdBy: currentUserReference,
+                                        bannerImg: _model.uploadedFileUrl2,
+                                        markerIcon: functions.placeTypeSelector(
+                                            _model.choiceChipsValue!),
+                                        websiteLink: _model
+                                            .websiteLinkTextController.text,
+                                        name: _model
+                                            .yourFullNameTextController.text,
+                                        location: FFAppState()
+                                            .selectedLocation
+                                            .address,
+                                        placeType: _model.choiceChipsValue,
+                                        description: _model
+                                            .businessDescriptionTextController
+                                            .text,
+                                      ),
+                                      ...mapToFirestore(
+                                        {
+                                          'nameSplit':
+                                              functions.nameSplitFunction(_model
+                                                  .businessNameTextController
+                                                  .text),
+                                        },
+                                      ),
+                                    });
+                                    _model.createdPlace =
+                                        PlacesRecord.getDocumentFromData({
+                                      ...createPlacesRecordData(
+                                        coordinates: functions.convertLatLong(
+                                            FFAppState()
+                                                .selectedLocation
+                                                .latlng
+                                                .latitude
+                                                .toString(),
+                                            FFAppState()
+                                                .selectedLocation
+                                                .latlng
+                                                .longitude
+                                                .toString()),
+                                        createdBy: currentUserReference,
+                                        bannerImg: _model.uploadedFileUrl2,
+                                        markerIcon: functions.placeTypeSelector(
+                                            _model.choiceChipsValue!),
+                                        websiteLink: _model
+                                            .websiteLinkTextController.text,
+                                        name: _model
+                                            .yourFullNameTextController.text,
+                                        location: FFAppState()
+                                            .selectedLocation
+                                            .address,
+                                        placeType: _model.choiceChipsValue,
+                                        description: _model
+                                            .businessDescriptionTextController
+                                            .text,
+                                      ),
+                                      ...mapToFirestore(
+                                        {
+                                          'nameSplit':
+                                              functions.nameSplitFunction(_model
+                                                  .businessNameTextController
+                                                  .text),
+                                        },
+                                      ),
+                                    }, placesRecordReference);
+
+                                    await currentUserReference!.update({
+                                      ...mapToFirestore(
+                                        {
+                                          'places': FieldValue.arrayUnion(
+                                              [_model.createdPlace?.reference]),
+                                        },
+                                      ),
+                                    });
                                   }
-
-                                  var placesRecordReference =
-                                      PlacesRecord.collection.doc();
-                                  await placesRecordReference.set({
-                                    ...createPlacesRecordData(
-                                      coordinates: functions.convertLatLong(
-                                          FFAppState()
-                                              .selectedLocation
-                                              .latlng
-                                              .latitude
-                                              .toString(),
-                                          FFAppState()
-                                              .selectedLocation
-                                              .latlng
-                                              .longitude
-                                              .toString()),
-                                      createdBy: currentUserReference,
-                                      bannerImg: _model.uploadedFileUrl2,
-                                      markerIcon: functions.placeTypeSelector(
-                                          _model.choiceChipsValue!),
-                                      websiteLink:
-                                          _model.websiteLinkTextController.text,
-                                      name: _model
-                                          .yourFullNameTextController.text,
-                                      location:
-                                          FFAppState().selectedLocation.address,
-                                      placeType: _model.choiceChipsValue,
-                                      description: _model
-                                          .businessDescriptionTextController
-                                          .text,
-                                    ),
-                                    ...mapToFirestore(
-                                      {
-                                        'nameSplit':
-                                            functions.nameSplitFunction(_model
-                                                .businessNameTextController
-                                                .text),
-                                      },
-                                    ),
-                                  });
-                                  _model.createdPlace =
-                                      PlacesRecord.getDocumentFromData({
-                                    ...createPlacesRecordData(
-                                      coordinates: functions.convertLatLong(
-                                          FFAppState()
-                                              .selectedLocation
-                                              .latlng
-                                              .latitude
-                                              .toString(),
-                                          FFAppState()
-                                              .selectedLocation
-                                              .latlng
-                                              .longitude
-                                              .toString()),
-                                      createdBy: currentUserReference,
-                                      bannerImg: _model.uploadedFileUrl2,
-                                      markerIcon: functions.placeTypeSelector(
-                                          _model.choiceChipsValue!),
-                                      websiteLink:
-                                          _model.websiteLinkTextController.text,
-                                      name: _model
-                                          .yourFullNameTextController.text,
-                                      location:
-                                          FFAppState().selectedLocation.address,
-                                      placeType: _model.choiceChipsValue,
-                                      description: _model
-                                          .businessDescriptionTextController
-                                          .text,
-                                    ),
-                                    ...mapToFirestore(
-                                      {
-                                        'nameSplit':
-                                            functions.nameSplitFunction(_model
-                                                .businessNameTextController
-                                                .text),
-                                      },
-                                    ),
-                                  }, placesRecordReference);
-
-                                  await currentUserReference!.update({
-                                    ...mapToFirestore(
-                                      {
-                                        'places': FieldValue.arrayUnion(
-                                            [_model.createdPlace?.reference]),
-                                      },
-                                    ),
-                                  });
                                 }
 
                                 safeSetState(() {});
