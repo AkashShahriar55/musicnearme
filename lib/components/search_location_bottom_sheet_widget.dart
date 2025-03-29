@@ -8,6 +8,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:math';
 import 'dart:ui';
+import '/flutter_flow/permissions_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -214,6 +215,7 @@ class _SearchLocationBottomSheetWidgetState
             hoverColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () async {
+              await requestPermission(locationPermission);
               FFAppState().selectedLocation =
                   widget!.currentLocationInfoFromPage!;
               safeSetState(() {});

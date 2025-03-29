@@ -8,6 +8,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:math';
 import 'dart:ui';
+import '/flutter_flow/permissions_util.dart';
 import 'search_location_bottom_sheet_widget.dart'
     show SearchLocationBottomSheetWidget;
 import 'package:easy_debounce/easy_debounce.dart';
