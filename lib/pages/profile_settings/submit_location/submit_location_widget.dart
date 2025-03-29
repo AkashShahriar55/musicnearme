@@ -147,15 +147,15 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-          iconTheme:
-              IconThemeData(color: FlutterFlowTheme.of(context).primaryText),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          iconTheme: IconThemeData(
+              color: FlutterFlowTheme.of(context).primaryBackground),
           automaticallyImplyLeading: true,
           title: Text(
             'Submit location',
             style: FlutterFlowTheme.of(context).bodyMedium.override(
                   fontFamily: 'Readex Pro',
-                  color: FlutterFlowTheme.of(context).primaryText,
+                  color: FlutterFlowTheme.of(context).primaryBackground,
                   fontSize: 18.0,
                   letterSpacing: 0.0,
                   fontWeight: FontWeight.bold,
@@ -275,6 +275,9 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                       return;
                                     }
                                   }
+
+                                  _model.hasBannerImage = true;
+                                  safeSetState(() {});
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -295,8 +298,7 @@ class _SubmitLocationWidgetState extends State<SubmitLocationWidget>
                                     ),
                                   ),
                                   child: Visibility(
-                                    visible:
-                                        _model.uploadedLocalFile1.height! > 0.0,
+                                    visible: _model.hasBannerImage == true,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.max,
                                       mainAxisAlignment:
