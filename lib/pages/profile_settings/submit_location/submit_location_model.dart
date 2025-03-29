@@ -39,6 +39,8 @@ class SubmitLocationModel extends FlutterFlowModel<SubmitLocationWidget> {
     updateFn(currentLocationInfo ??= LocationInfoStruct());
   }
 
+  bool hasBannerImage = true;
+
   ///  State fields for stateful widgets in this page.
 
   final formKey = GlobalKey<FormState>();
