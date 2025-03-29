@@ -150,6 +150,78 @@ class ReverseGeocodeCall {
         response,
         r'''$.features[:].properties.full_address''',
       ));
+  static dynamic? currentLatLong(dynamic response) => getJsonField(
+        response,
+        r'''$.features[:].properties.coordinates''',
+      );
+  static String? currentMapBoxId(dynamic response) =>
+      castToType<String>(getJsonField(
+        response,
+        r'''$.features[:].properties.mapbox_id''',
+      ));
+}
+
+class LocationSuggestCall {
+  static Future<ApiCallResponse> call({
+    String? q = '',
+    String? accessToken = '',
+    String? sessionToken = '',
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'Location suggest',
+      apiUrl:
+          'https://api.mapbox.com/search/searchbox/v1/suggest?q=${q}&access_token=${accessToken}&session_token=${sessionToken}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<LocationSuggestionStruct>? suggestionMap(dynamic response) =>
+      (getJsonField(
+        response,
+        r'''$.suggestions''',
+        true,
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => LocationSuggestionStruct.maybeFromMap(x))
+          .withoutNulls
+          .toList();
+}
+
+class LocationRetreiveCall {
+  static Future<ApiCallResponse> call({
+    String? id = '',
+    String? sessionToken = '',
+    String? accessToken = '',
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'Location retreive',
+      apiUrl:
+          'https://api.mapbox.com/search/searchbox/v1/retrieve/${id}?session_token=${sessionToken}&access_token=${accessToken}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static LatLongDataStruct? locationlatlong(dynamic response) =>
+      LatLongDataStruct.maybeFromMap(getJsonField(
+        response,
+        r'''$.features[:].properties.coordinates''',
+      ));
 }
 
 class ApiPagingParams {
